@@ -54,5 +54,21 @@ class Presentation(models.Model):
     def __str__(self):
         return self.title
 
+    def approve(self):
+        # get the Status instance with name "APPROVED"
+        status = Status.objects.get(name="APPROVED")
+        # set the status property on presentation to that value
+        self.status = status
+        # save presentation
+        self.save()
+
+    def reject(self):
+        # get Status instance with name "REJECTED"
+        status = Status.objects.get(name="REJECTED")
+        # set status property on presentation to that value
+        self.status = status
+        # save presentation
+        self.save()
+
     class Meta:
         ordering = ("title",)  # Default ordering for presentation
