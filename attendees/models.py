@@ -30,7 +30,8 @@ class Attendee(models.Model):
         # if the attendee already has a badge, no nothing
         try:
             self.badge
-        # otherwise, create a badge instance with self as the value for attendee
+        # otherwise, create a badge instance with self as the value for
+        # attendee
         except ObjectDoesNotExist:
             Badge.objects.create(attendee=self)
 
