@@ -27,8 +27,10 @@ class Attendee(models.Model):
         return reverse("api_show_attendee", kwargs={"pk": self.pk})
 
     def create_badge(self):
+        # if the attendee already has a badge, no nothing
         try:
             self.badge
+        # otherwise, create a badge instance with self as the value for attendee
         except ObjectDoesNotExist:
             Badge.objects.create(attendee=self)
 
