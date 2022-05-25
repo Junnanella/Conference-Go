@@ -182,7 +182,30 @@ def api_show_location(request, pk):
     if request.method == "GET":
         location = Location.objects.get(id=pk)
 
-        return JsonResponse(location, encoder=LocationDetailEncoder, safe=False)
+        return JsonResponse(
+            location, encoder=LocationDetailEncoder, safe=False
+        )
     elif request.method == "DELETE":
         count, _ = Location.objects.filter(id=pk).delete()
         return JsonResponse({"deleted": count > 0})
+    else:
+        content = json.loads(request.body)
+        try:
+            # new codeif "state" in content:
+            state = State.objects.get(abbreviation=content["state"])
+            content["state"] = state
+        except State.DoesNotExist:
+            return JsonResponse(
+                {"message": "Invalid state abbreviation"},
+                status=400,
+            )
+        # new code
+        Location.objects.filter(id=pk).update(**content)
+
+        # copied from get detail
+        location = Location.objects.get(id=pk)
+        return JsonResponse(
+            location,
+            encoder=LocationDetailEncoder,
+            safe=False,
+        )
