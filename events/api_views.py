@@ -6,6 +6,13 @@ from .models import Conference, Location
 # Encoders
 
 
+class LocationListEncoder(ModelEncoder):
+    model = Location
+    properties = [
+        "name",
+    ]
+
+
 class ConferenceDetailEncoder(ModelEncoder):
     model = Conference
     properties = [
@@ -17,6 +24,38 @@ class ConferenceDetailEncoder(ModelEncoder):
         "ends",
         "created",
         "updated",
+        "location",
+    ]
+    encoders = {
+        "location": LocationListEncoder(),
+    }
+
+
+class ConferenceListEncoder(ModelEncoder):
+    model = Conference
+    properties = [
+        "name",
+    ]
+
+
+class LocationDetailEncoder(ModelEncoder):
+    model = Location
+    properties = [
+        "name",
+        "city",
+        "room_count",
+        "created",
+        "updated",
+    ]
+
+    def get_extra_data(self, o):
+        return {"state": o.state.abbreviation}
+
+
+class LocationListEncoder(ModelEncoder):
+    model = Location
+    properties = [
+        "name",
     ]
 
 
@@ -42,16 +81,11 @@ def api_list_conferences(request):
         ]
     }
     """
-    response = []
     conferences = Conference.objects.all()
-    for conference in conferences:
-        response.append(
-            {
-                "name": conference.name,
-                "href": conference.get_api_url(),
-            }
-        )
-    return JsonResponse({"conferences": response})
+    return JsonResponse(
+        {"conferences": conferences},
+        encoder=ConferenceListEncoder,
+    )
 
 
 def api_show_conference(request, pk):
@@ -112,7 +146,11 @@ def api_list_locations(request):
         for location in Location.objects.all()
     ]
 
-    return JsonResponse({"location": locations})
+    return JsonResponse(
+        locations,
+        encoder=LocationListEncoder,
+        safe=False,
+    )
 
 
 def api_show_location(request, pk):
@@ -135,13 +173,4 @@ def api_show_location(request, pk):
 
     location = Location.objects.get(id=pk)
 
-    return JsonResponse(
-        {
-            "name": location.name,
-            "city": location.city,
-            "room_count": location.room_count,
-            "created": location.created,
-            "updated": location.updated,
-            "state": location.state.abbreviation,
-        }
-    )
+    return JsonResponse(location, encoder=LocationDetailEncoder, safe=False)
