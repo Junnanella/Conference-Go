@@ -1,7 +1,9 @@
 from django.http import JsonResponse
 from common.json import ModelEncoder
+from django.views.decorators.http import require_http_methods
+import json
 
-from .models import Conference, Location
+from .models import Conference, Location, State
 
 # Encoders
 
@@ -114,6 +116,7 @@ def api_show_conference(request, pk):
     )
 
 
+@require_http_methods(["GET", "POST"])
 def api_list_locations(request):
     """
     Lists the location names and the link to the location.
@@ -133,17 +136,28 @@ def api_list_locations(request):
         ]
     }
     """
+    if request.method == "GET":
+        locations = Location.objects.all()
 
-    locations = [
-        {"name": location.name, "href": location.get_api_url()}
-        for location in Location.objects.all()
-    ]
-
-    return JsonResponse(
-        locations,
-        encoder=LocationListEncoder,
-        safe=False,
-    )
+        return JsonResponse(
+            locations,
+            encoder=LocationListEncoder,
+            safe=False,
+        )
+    else:
+        content = json.loads(request.body)
+        try:
+            # Get the State object and put it in the content dict
+            state = State.objects.get(abbreviation=content["state"])
+            content["state"] = state
+        except State.DoesNotExist:
+            return JsonResponse(
+                {"message": "Invalid state abbreviation"}, status=400,
+            )
+        location = Location.objects.create(**content)
+        return JsonResponse(
+            location, encoder=LocationDetailEncoder, safe=False
+        )
 
 
 def api_show_location(request, pk):
