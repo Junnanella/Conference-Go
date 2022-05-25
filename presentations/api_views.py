@@ -18,6 +18,13 @@ class PresentationDetailEncoder(ModelEncoder):
     ]
 
 
+class PresentationListEncoder(ModelEncoder):
+    model = Presentation
+    properties = [
+        "name",
+    ]
+
+
 # views
 
 
@@ -51,7 +58,11 @@ def api_list_presentations(request, conference_id):
         }
         for p in Presentation.objects.filter(conference=conference_id)
     ]
-    return JsonResponse({"presentations": presentations})
+    return JsonResponse(
+        presentations,
+        encoder=PresentationListEncoder,
+        safe=False,
+    )
 
 
 def api_show_presentation(request, pk):

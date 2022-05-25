@@ -52,13 +52,6 @@ class LocationDetailEncoder(ModelEncoder):
         return {"state": o.state.abbreviation}
 
 
-class LocationListEncoder(ModelEncoder):
-    model = Location
-    properties = [
-        "name",
-    ]
-
-
 # standard views
 
 
