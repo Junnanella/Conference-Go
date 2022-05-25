@@ -152,7 +152,8 @@ def api_list_locations(request):
             content["state"] = state
         except State.DoesNotExist:
             return JsonResponse(
-                {"message": "Invalid state abbreviation"}, status=400,
+                {"message": "Invalid state abbreviation"},
+                status=400,
             )
         location = Location.objects.create(**content)
         return JsonResponse(
@@ -160,6 +161,7 @@ def api_list_locations(request):
         )
 
 
+@require_http_methods(["DELETE", "GET", "PUT"])
 def api_show_location(request, pk):
     """
     Returns the details for the Location model specified
@@ -177,7 +179,10 @@ def api_show_location(request, pk):
         "state": the two-letter abbreviation for the state,
     }
     """
+    if request.method == "GET":
+        location = Location.objects.get(id=pk)
 
-    location = Location.objects.get(id=pk)
-
-    return JsonResponse(location, encoder=LocationDetailEncoder, safe=False)
+        return JsonResponse(location, encoder=LocationDetailEncoder, safe=False)
+    elif request.method == "DELETE":
+        count, _ = Location.objects.filter(id=pk).delete()
+        return JsonResponse({"deleted": count > 0})
