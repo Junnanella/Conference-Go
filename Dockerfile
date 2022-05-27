@@ -1,6 +1,5 @@
-# Select the base image that is best for our application
 From python:3
-
+# Select the base image that is best for our application
 # Install any operating system junk
 # We don't know yet if we need this, so let's leave it blank. 
 # If it doesn't run when we finish, we'll figure it out at that point.
