@@ -2,6 +2,7 @@ from .key import PEXELS_API_KEY, OPEN_WEATHER_API_KEY
 import requests
 import json
 
+
 def get_photo(city, state):
     # Create a dictionary for the headers to use in the request
     headers = {
@@ -20,11 +21,9 @@ def get_photo(city, state):
     # Return a dictionary that contains a `picture_url` key and
     #   one of the URLs for one of the pictures in the response
     try:
-        return{"picture_url": content["photos"][0]["src"]["original"]}
+        return {"picture_url": content["photos"][0]["src"]["original"]}
     except:
         return {"picture_url": None}
-
-
 
 
 def get_weather_data(city, state):
@@ -63,6 +62,6 @@ def get_weather_data(city, state):
     #   them in a dictionary
     # Return the dictionary
     try:
-        return{"weather": content["weather"]}
+        return {"weather": content["weather"]}
     except:
         return {"weather": None}
