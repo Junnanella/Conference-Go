@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from common.json import ModelEncoder
 from django.views.decorators.http import require_http_methods
 import json
-from .acls import get_photo
+from .acls import get_photo, get_weather_data
 
 from .models import Conference, Location, State
 
@@ -131,8 +131,17 @@ def api_show_conference(request, pk):
     }
     """
     conference = Conference.objects.get(id=pk)
+
+
+    # Use the city and state abbreviation of the Conference's Location
+    # to call the get_weather_data ACL function and get back a dictionary
+    # that contains the weather data
+    city = conference.location.city
+    state = conference.location.state.name
+    weather = get_weather_data(city, state)
+
     return JsonResponse(
-        conference,
+        {"conference": conference, "weather": weather},
         encoder=ConferenceDetailEncoder,
         safe=False,
     )

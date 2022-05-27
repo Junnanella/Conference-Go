@@ -24,17 +24,45 @@ def get_photo(city, state):
     except:
         return {"picture_url": None}
 
+
+
+
 def get_weather_data(city, state):
+    print(f"I am querying city: {city}, state: {state}")
+
+    params = {
+        "q": city + "," + state,
+        "appid": OPEN_WEATHER_API_KEY,
+    }
     # Create the URL for the geocoding API with the city and state
+    url = "http://api.openweathermap.org/geo/1.0/direct"
     # Make the request
+    res = requests.get(url, params=params)
     # Parse the JSON response
+    content = json.loads(res.content)
+
+    print(content)
+
     # Get the latitude and longitude from the response
+    lat = content[0]["lat"]
+    lon = content[0]["lon"]
+    params = {
+        "lat": lat,
+        "lon": lon,
+        "appid": OPEN_WEATHER_API_KEY,
+    }
 
     # Create the URL for the current weather API with the latitude
+    url = "https://api.openweathermap.org/data/2.5/weather"
     #   and longitude
     # Make the request
+    res = requests.get(url, params=params)
     # Parse the JSON response
+    content = json.loads(res.content)
     # Get the main temperature and the weather's description and put
     #   them in a dictionary
     # Return the dictionary
-    pass
+    try:
+        return{"weather": content["weather"]}
+    except:
+        return {"weather": None}
