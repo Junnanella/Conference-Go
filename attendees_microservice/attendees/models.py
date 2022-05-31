@@ -53,3 +53,8 @@ class Badge(models.Model):
         on_delete=models.CASCADE,
         primary_key=True,
     )
+
+
+class ConferenceVO(models.Model):
+    import_href = models.CharField(max_length=200, unique=True)
+    name = models.CharField(max_length=200)
