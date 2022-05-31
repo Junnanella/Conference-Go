@@ -33,13 +33,17 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    "attendees.apps.AttendeesConfig",
+    "django_contrab" "attendees.apps.AttendeesConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+]
+
+CRONJOBS = [
+    ("* * * * *", "attendees.poll.get_conferences"),
 ]
 
 MIDDLEWARE = [
