@@ -1,7 +1,9 @@
 from django.http import JsonResponse
 from common.json import ModelEncoder
+from django.views.decorators.http import require_http_methods
 
 from .models import Presentation
+from events.api_views import ConferenceListEncoder
 
 # Encoder
 
@@ -15,7 +17,14 @@ class PresentationDetailEncoder(ModelEncoder):
         "title",
         "synopsis",
         "created",
+        "conference",
     ]
+    encoders = {
+        "conference": ConferenceListEncoder(),
+    }
+
+    def get_extra_data(self, o):
+        return {"status": o.status.name}
 
 
 class PresentationListEncoder(ModelEncoder):
@@ -95,4 +104,26 @@ def api_show_presentation(request, pk):
 
     return JsonResponse(
         presentation, encoder=PresentationDetailEncoder, safe=False
+    )
+
+
+@require_http_methods(["PUT"])
+def api_approve_presentation(request, pk):
+    presentation = Presentation.objects.get(id=pk)
+    presentation.approve()
+    return JsonResponse(
+        presentation,
+        encoder=PresentationDetailEncoder,
+        safe=False,
+    )
+
+
+@require_http_methods(["PUT"])
+def api_reject_presentation(request, pk):
+    presentation = Presentation.objects.get(id=pk)
+    presentation.reject()
+    return JsonResponse(
+        presentation,
+        encoder=PresentationDetailEncoder,
+        safe=False,
     )
