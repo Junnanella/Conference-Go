@@ -33,7 +33,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    "django_contrab",
+    # "django_contrab",
     "attendees.apps.AttendeesConfig",
     "django.contrib.admin",
     "django.contrib.auth",
