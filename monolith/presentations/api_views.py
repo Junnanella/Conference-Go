@@ -1,3 +1,4 @@
+from inspect import _void
 from django.http import JsonResponse
 from common.json import ModelEncoder
 from django.views.decorators.http import require_http_methods
@@ -109,7 +110,7 @@ def api_show_presentation(request, pk):
     )
 
 
-def call_pika(data, queue_name):
+def queue_presentation(data, queue_name: str) -> None:
     parameters = pika.ConnectionParameters(host="rabbitmq")
     connection = pika.BlockingConnection(parameters)
     channel = connection.channel()
@@ -126,7 +127,7 @@ def call_pika(data, queue_name):
 def api_approve_presentation(request, pk):
     presentation = Presentation.objects.get(id=pk)
     presentation.approve()
-    call_pika(
+    queue_presentation(
         {
             "presenter_name": presentation.presenter_name,
             "presenter_email": presentation.presenter_email,
@@ -145,7 +146,7 @@ def api_approve_presentation(request, pk):
 def api_reject_presentation(request, pk):
     presentation = Presentation.objects.get(id=pk)
     presentation.reject()
-    call_pika(
+    queue_presentation(
         {
             "presenter_name": presentation.presenter_name,
             "presenter_email": presentation.presenter_email,
